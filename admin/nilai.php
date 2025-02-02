@@ -12,12 +12,10 @@ include "header.php";
 
 <?php
 setlocale(LC_TIME, 'id_ID.utf8', 'Indonesian_indonesia');
-
 $tanggalSekarang = date('d F Y');
 ?>
 
 <b>Pasaman, <?php echo $tanggalSekarang; ?></b>
-
 
 <h2 class="mb-4">Nilai</h2>
 <hr>
@@ -29,19 +27,29 @@ $tanggalSekarang = date('d F Y');
         <th class="text-center">No</th>
         <th class="text-center">ID Alternatif</th> 
         <th class="text-center">Nama Alternatif</th>
-        
+
         <?php
         // Ambil daftar kriteria
-        $kriteriaQuery = "SELECT * FROM tbl_kriteria ORDER BY id_kriteria";
-        $kriteriaResult = $conn->query($kriteriaQuery);
         $kriteriaList = [];
+        $satuanList = [
+            "Rp",        // Harga
+            "ml/gr",     // Volume Racun/Ha
+            "liter/kg",  // Ukuran Kemasan
+            "tahun",     // Masa Kadaluarsa
+            "m2"         // Luas Cakupan
+        ];
 
+        $kriteriaQuery = "SELECT id_kriteria, nama_kriteria FROM tbl_kriteria ORDER BY id_kriteria";
+        $kriteriaResult = $conn->query($kriteriaQuery);
+        $i = 0;
         while ($row = $kriteriaResult->fetch_assoc()) {
-            echo "<th class='text-center'>$row[nama_kriteria]</th>";
-            $kriteriaList[] = $row['id_kriteria']; // Simpan id_kriteria untuk pemrosesan nilai
+            $nama_kriteria = $row['nama_kriteria'];
+            echo "<th class='text-center'>{$nama_kriteria}</th>";
+            $kriteriaList[$row['id_kriteria']] = isset($satuanList[$i]) ? $satuanList[$i] : "";
+            $i++;
         }
         ?>
-        
+
         <th class="text-center">Tanggal</th>
         <th class="text-center">Aksi</th>
     </tr>
@@ -77,9 +85,20 @@ $tanggalSekarang = date('d F Y');
         }
 
         // Tampilkan nilai untuk setiap kriteria
-        foreach ($kriteriaList as $id_kriteria) {
+        $i = 0;
+        foreach ($kriteriaList as $id_kriteria => $satuan) {
             $nilai = isset($nilaiData[$id_kriteria]) ? $nilaiData[$id_kriteria] : "-";
-            echo "<td class='text-center'>$nilai</td>";
+            if ($nilai !== "-") {
+                if ($satuan == "Rp") {
+                    $nilaiFormatted = "Rp " . number_format($nilai, 0, ',', '.');
+                } else {
+                    $nilaiFormatted = number_format($nilai, 0, ',', '.') . " " . $satuan;
+                }
+            } else {
+                $nilaiFormatted = "-";
+            }
+            echo "<td class='text-center'>$nilaiFormatted</td>";
+            $i++;
         }
 
         echo "<td class='text-center'>$tanggal</td>";
