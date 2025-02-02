@@ -1,4 +1,4 @@
-# README - Penerapan Metode WASPAS
+Penerapan Metode WASPAS
 
 ## Deskripsi Proyek
 Penerapan Metode WASPAS adalah sebuah sistem berbasis web yang digunakan untuk pemilihan alternatif terbaik berdasarkan metode Weighted Aggregated Sum Product Assessment (WASPAS). Sistem ini dikembangkan menggunakan PHP dan MySQL sebagai basis datanya.
